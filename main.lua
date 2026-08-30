@@ -1,21 +1,11 @@
--- Rayfield UI Kütüphanesini Yükleme
+-- Rayfield UI Kütüphanesi
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Koyu Mor Tema Ayarları (Custom Theme)
 local Window = Rayfield:CreateWindow({
-   Name = "Ravenya Hub | Blox Fruits",
+   Name = "Ravenya Hub | Blox Fruits (All Seas)",
    LoadingTitle = "Ravenya Hub Yükleniyor...",
    LoadingSubtitle = "by Ravenya",
-   ConfigurationSaving = { Enabled = false },
-   Theme = {
-      TextColor = Color3.fromRGB(240, 240, 240),
-      Background = Color3.fromRGB(20, 10, 25),
-      Topbar = Color3.fromRGB(35, 15, 45),
-      DropdownFrame = Color3.fromRGB(30, 15, 40),
-      InputField = Color3.fromRGB(30, 15, 40),
-      SectionTitle = Color3.fromRGB(180, 100, 255),
-      Accent = Color3.fromRGB(150, 50, 230)
-   }
+   ConfigurationSaving = { Enabled = false }
 })
 
 local MainTab = Window:CreateTab("Auto Farm", 4483362458)
@@ -24,44 +14,74 @@ local MainTab = Window:CreateTab("Auto Farm", 4483362458)
 local AutoFarm = false
 local SelectWeapon = "Melee"
 
--- Oyuncu Bilgileri
 local player = game.Players.LocalPlayer
-local function getLevel()
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
+
+-- Denizi ve Seviyeyi Algılama Fonksiyonu
+local function GetCurrentSea()
+    local placeId = game.PlaceId
+    if placeId == 2753915549 then
+        return 1
+    elseif placeId == 4442272183 then
+        return 2
+    elseif placeId == 7449423635 then
+        return 3
+    end
+    return 1
+end
+
+local function GetLevel()
     return player.Data.Level.Value
 end
 
--- Seviyeye Göre Görev ve Yaratık Belirleme (Sea 1 Başlangıç Mantığı)
-local function CheckQuest()
-    local myLevel = getLevel()
-    local questName, mobName, questCFrame, mobCFrame, questLevel
-    
-    if myLevel >= 1 and myLevel < 10 then
-        questName = "BanditQuest1"
-        mobName = "Bandit"
-        questLevel = 1
-    elseif myLevel >= 10 and myLevel < 15 then
-        questName = "JungleQuest"
-        mobName = "Monkey"
-        questLevel = 1
-    elseif myLevel >= 15 and myLevel < 30 then
-        questName = "JungleQuest"
-        mobName = "Gorilla"
-        questLevel = 2
-    elseif myLevel >= 30 and myLevel < 40 then
-        questName = "PirateQuest"
-        mobName = "Pirate"
-        questLevel = 1
-    else
-        -- Varsayılan fallback
-        questName = "BanditQuest1"
-        mobName = "Bandit"
-        questLevel = 1
+-- Seviye ve Denize Göre Görev Tablosu
+local function GetQuestData()
+    local myLevel = GetLevel()
+    local sea = GetCurrentSea()
+
+    if sea == 1 then
+        if myLevel < 10 then return "BanditQuest1", "Bandit", 1 end
+        if myLevel < 15 then return "JungleQuest", "Monkey", 1 end
+        if myLevel < 30 then return "JungleQuest", "Gorilla", 2 end
+        if myLevel < 40 then return "PirateQuest", "Pirate", 1 end
+        if myLevel < 60 then return "DesertQuest", "Desert Officer", 2 end
+        if myLevel < 90 then return "SnowQuest", "Snowman", 2 end
+        if myLevel < 120 then return "MarineQuest2", "Chief Petty Officer", 2 end
+        if myLevel < 150 then return "SkyQuest", "Sky Bandit", 1 end
+        if myLevel < 190 then return "PrisonerQuest", "Dangerous Prisoner", 2 end
+        if myLevel < 275 then return "ColosseumQuest", "Gladiator", 2 end
+        if myLevel < 375 then return "MagmaQuest", "Military Soldier", 1 end
+        if myLevel < 450 then return "FishmanQuest", "Fishman Warrior", 1 end
+        if myLevel < 525 then return "SkyQuest2", "God's Guard", 1 end
+        if myLevel < 625 then return "FountainQuest", "Chore Boy", 1 end
+        return "FountainQuest", "Cyborg", 2
+
+    elseif sea == 2 then
+        if myLevel < 725 then return "Area1Quest", "Raider", 1 end
+        if myLevel < 775 then return "Area2Quest", "Mercenary", 1 end
+        if myLevel < 850 then return "Area2Quest", "Swan Pirate", 2 end
+        if myLevel < 900 then return "FactoryQuest", "Factory Staff", 1 end
+        if myLevel < 950 then return "JeremyQuest", "Jeremy", 1 end
+        if myLevel < 1000 then return "ZombieQuest", "Zombie", 1 end
+        if myLevel < 1100 then return "SnowMountainQuest", "Snow Trooper", 1 end
+        if myLevel < 1250 then return "ShipQuest1", "Ship Deckhand", 1 end
+        if myLevel < 1350 then return "ShipQuest2", "Ship Officer", 1 end
+        if myLevel < 1425 then return "FrostQuest", "Ice Castle Guard", 1 end
+        return "ForgottenQuest", "Water Fighter", 1
+
+    elseif sea == 3 then
+        if myLevel < 1575 then return "PiratePortQuest", "Pirate Millionaire", 1 end
+        if myLevel < 1700 then return "AmazonQuest", "Dragon Crew Warrior", 1 end
+        if myLevel < 1825 then return "MansionQuest", "Female Islander", 1 end
+        if myLevel < 1900 then return "TurtleQuest", "Fishman Raider", 1 end
+        if myLevel < 2000 then return "DeepForestQuest", "Jungle Pirate", 1 end
+        if myLevel < 2200 then return "HauntedQuest1", "Reborn Skeleton", 1 end
+        return "PeanutQuest", "Peanut Scout", 1
     end
-    
-    return questName, mobName, questLevel
 end
 
--- Yumuşak Işınlanma (Tween)
+-- Işınlanma (Tween)
 local function TweenTo(targetCFrame)
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp = character:FindFirstChild("HumanoidRootPart")
@@ -75,13 +95,12 @@ local function TweenTo(targetCFrame)
     end
 end
 
--- Seçili Silahı Ele Alma
+-- Silah Kuşanma
 local function EquipWeapon()
     local character = player.Character
     if not character then return end
     
-    local backpack = player.Backpack
-    for _, item in pairs(backpack:GetChildren()) do
+    for _, item in pairs(player.Backpack:GetChildren()) do
         if item:IsA("Tool") then
             if SelectWeapon == "Melee" and item.ToolTipType == "Melee" then
                 character.Humanoid:EquipTool(item)
@@ -94,7 +113,7 @@ local function EquipWeapon()
     end
 end
 
--- Tıklama / Saldırı Simülasyonu
+-- Saldırı Simülasyonu
 local function AutoAttack()
     local VirtualUser = game:GetService("VirtualUser")
     VirtualUser:CaptureController()
@@ -113,27 +132,26 @@ MainTab:CreateDropdown({
 })
 
 MainTab:CreateToggle({
-   Name = "Auto-Farm (Auto Level & Quest)",
+   Name = "Auto-Farm Level (All Sea Supported)",
    CurrentValue = false,
    Callback = function(Value)
       AutoFarm = Value
    end,
 })
 
--- Ana Döngü (Level-Based Auto Quest & Farm)
+-- Ana Döngü
 task.spawn(function()
     while task.wait(0.1) do
         if AutoFarm then
             pcall(function()
-                local questName, mobName, questLevel = CheckQuest()
-                local questData = player.PlayerGui.Main.Quest
+                local questName, mobName, questLevel = GetQuestData()
+                local questGui = player.PlayerGui.Main:FindFirstChild("Quest")
                 
-                -- Eğer aktif görev yoksa NPC'den görev al
-                if not questData.Visible then
-                    -- Görev alma tetikleyicisi (CommF_ Remote Event)
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", questName, questLevel)
+                -- Eğer aktif görev yoksa Remote çağrısı ile görevi başlat
+                if not questGui or not questGui.Visible then
+                    CommF:InvokeServer("StartQuest", questName, questLevel)
                 else
-                    -- Görev varsa yaratık ara ve kes
+                    -- Görev aktifse workspace üzerindeki doğru yaratığı bul
                     local targetMob = nil
                     for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
                         if enemy.Name == mobName and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
@@ -142,14 +160,11 @@ task.spawn(function()
                         end
                     end
                     
-                    if targetMob then
-                        local hrp = targetMob:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            -- Yaratığın 7 birim üstünde dur (Güvenli mesafe)
-                            TweenTo(hrp.CFrame * CFrame.new(0, 7, 0))
-                            EquipWeapon()
-                            AutoAttack()
-                        end
+                    if targetMob and targetMob:FindFirstChild("HumanoidRootPart") then
+                        -- Yaratığın yukarısına güvenli mesafeye ışınlan ve vur
+                        TweenTo(targetMob.HumanoidRootPart.CFrame * CFrame.new(0, 7, 0))
+                        EquipWeapon()
+                        AutoAttack()
                     end
                 end
             end)
