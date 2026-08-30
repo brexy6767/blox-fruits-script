@@ -5,7 +5,16 @@ local Window = Rayfield:CreateWindow({
    Name = "Ravenya Hub | Blox Fruits",
    LoadingTitle = "Ravenya Hub Yükleniyor...",
    LoadingSubtitle = "by Ravenya",
-   ConfigurationSaving = { Enabled = false }
+   ConfigurationSaving = { Enabled = false },
+   Theme = {
+      TextColor = Color3.fromRGB(240, 240, 240),
+      Background = Color3.fromRGB(20, 10, 25),
+      Topbar = Color3.fromRGB(35, 15, 45),
+      DropdownFrame = Color3.fromRGB(30, 15, 40),
+      InputField = Color3.fromRGB(30, 15, 40),
+      SectionTitle = Color3.fromRGB(180, 100, 255),
+      Accent = Color3.fromRGB(150, 50, 230)
+   }
 })
 
 local MainTab = Window:CreateTab("Auto Farm", 4483362458)
@@ -18,7 +27,7 @@ local player = game.Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
--- Noclip (Engellere Takılmama)
+-- Noclip (Duvarlara Takılmama)
 game:GetService("RunService").Stepped:Connect(function()
     if AutoFarm and player.Character then
         for _, part in pairs(player.Character:GetChildren()) do
@@ -43,51 +52,34 @@ local function GetLevel()
     return levelVal and levelVal.Value or 1
 end
 
--- Seviye / Görev Tablosu
+-- NPC Konumları ve Görev Bilgileri
 local function GetQuestData()
     local myLevel = GetLevel()
     local sea = GetCurrentSea()
 
     if sea == 1 then
-        if myLevel < 10 then return "BanditQuest1", "Bandit", 1 end
-        if myLevel < 15 then return "JungleQuest", "Monkey", 1 end
-        if myLevel < 30 then return "JungleQuest", "Gorilla", 2 end
-        if myLevel < 40 then return "PirateQuest", "Pirate", 1 end
-        if myLevel < 60 then return "DesertQuest", "Desert Officer", 2 end
-        if myLevel < 90 then return "SnowQuest", "Snowman", 2 end
-        if myLevel < 120 then return "MarineQuest2", "Chief Petty Officer", 2 end
-        if myLevel < 150 then return "SkyQuest", "Sky Bandit", 1 end
-        if myLevel < 190 then return "PrisonerQuest", "Dangerous Prisoner", 2 end
-        if myLevel < 275 then return "ColosseumQuest", "Gladiator", 2 end
-        if myLevel < 375 then return "MagmaQuest", "Military Soldier", 1 end
-        if myLevel < 450 then return "FishmanQuest", "Fishman Warrior", 1 end
-        if myLevel < 525 then return "SkyQuest2", "God's Guard", 1 end
-        if myLevel < 625 then return "FountainQuest", "Chore Boy", 1 end
-        return "FountainQuest", "Cyborg", 2
+        if myLevel < 10 then return "BanditQuest1", "Bandit", 1, CFrame.new(1059, 16, 1549)
+        elseif myLevel < 15 then return "JungleQuest", "Monkey", 1, CFrame.new(-1598, 37, 153)
+        elseif myLevel < 30 then return "JungleQuest", "Gorilla", 2, CFrame.new(-1598, 37, 153)
+        elseif myLevel < 40 then return "PirateQuest", "Pirate", 1, CFrame.new(-1140, 4, 3828)
+        elseif myLevel < 60 then return "DesertQuest", "Desert Officer", 2, CFrame.new(896, 6, 4388)
+        elseif myLevel < 90 then return "SnowQuest", "Snowman", 2, CFrame.new(1385, 87, -1298)
+        else return "BanditQuest1", "Bandit", 1, CFrame.new(1059, 16, 1549) end
     elseif sea == 2 then
-        if myLevel < 725 then return "Area1Quest", "Raider", 1 end
-        if myLevel < 775 then return "Area2Quest", "Mercenary", 1 end
-        if myLevel < 850 then return "Area2Quest", "Swan Pirate", 2 end
-        if myLevel < 900 then return "FactoryQuest", "Factory Staff", 1 end
-        if myLevel < 950 then return "JeremyQuest", "Jeremy", 1 end
-        if myLevel < 1000 then return "ZombieQuest", "Zombie", 1 end
-        if myLevel < 1100 then return "SnowMountainQuest", "Snow Trooper", 1 end
-        if myLevel < 1250 then return "ShipQuest1", "Ship Deckhand", 1 end
-        if myLevel < 1350 then return "ShipQuest2", "Ship Officer", 1 end
-        if myLevel < 1425 then return "FrostQuest", "Ice Castle Guard", 1 end
-        return "ForgottenQuest", "Water Fighter", 1
+        if myLevel < 725 then return "Area1Quest", "Raider", 1, CFrame.new(-425, 73, 1836)
+        elseif myLevel < 775 then return "Area2Quest", "Mercenary", 1, CFrame.new(-425, 73, 1836)
+        elseif myLevel < 850 then return "Area2Quest", "Swan Pirate", 2, CFrame.new(-425, 73, 1836)
+        elseif myLevel < 900 then return "FactoryQuest", "Factory Staff", 1, CFrame.new(632, 38, 4840)
+        elseif myLevel < 950 then return "JeremyQuest", "Jeremy", 1, CFrame.new(632, 38, 4840)
+        elseif myLevel < 1000 then return "ZombieQuest", "Zombie", 1, CFrame.new(-5495, 48, -794)
+        else return "Area1Quest", "Raider", 1, CFrame.new(-425, 73, 1836) end
     elseif sea == 3 then
-        if myLevel < 1575 then return "PiratePortQuest", "Pirate Millionaire", 1 end
-        if myLevel < 1700 then return "AmazonQuest", "Dragon Crew Warrior", 1 end
-        if myLevel < 1825 then return "MansionQuest", "Female Islander", 1 end
-        if myLevel < 1900 then return "TurtleQuest", "Fishman Raider", 1 end
-        if myLevel < 2000 then return "DeepForestQuest", "Jungle Pirate", 1 end
-        if myLevel < 2200 then return "HauntedQuest1", "Reborn Skeleton", 1 end
-        return "PeanutQuest", "Peanut Scout", 1
+        if myLevel < 1575 then return "PiratePortQuest", "Pirate Millionaire", 1, CFrame.new(-290, 44, 5580)
+        else return "PiratePortQuest", "Pirate Millionaire", 1, CFrame.new(-290, 44, 5580) end
     end
 end
 
--- Işınlanma (Tween)
+-- Senkronize Işınlanma (Tween)
 local function TweenTo(targetCFrame)
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp = character:FindFirstChild("HumanoidRootPart")
@@ -98,28 +90,32 @@ local function TweenTo(targetCFrame)
         local tweenInfo = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
         local tween = game:GetService("TweenService"):Create(hrp, tweenInfo, {CFrame = targetCFrame})
         tween:Play()
+        return tween
     end
 end
 
--- Silah Ele Alma
+-- Silah Kuşanma (Geliştirilmiş Kontrol)
 local function EquipWeapon()
     local character = player.Character
     if not character then return end
     
+    -- Eğer seçili silah zaten eldeyse tekrar işlem yapma
+    for _, item in pairs(character:GetChildren()) do
+        if item:IsA("Tool") and item.ToolTipType == SelectWeapon then
+            return
+        end
+    end
+    
+    -- Sırt çantasından ele al
     for _, item in pairs(player.Backpack:GetChildren()) do
-        if item:IsA("Tool") then
-            if SelectWeapon == "Melee" and item.ToolTipType == "Melee" then
-                character.Humanoid:EquipTool(item)
-            elseif SelectWeapon == "Sword" and item.ToolTipType == "Sword" then
-                character.Humanoid:EquipTool(item)
-            elseif SelectWeapon == "Blox Fruit" and item.ToolTipType == "Blox Fruit" then
-                character.Humanoid:EquipTool(item)
-            end
+        if item:IsA("Tool") and item.ToolTipType == SelectWeapon then
+            character.Humanoid:EquipTool(item)
+            break
         end
     end
 end
 
--- Saldırı
+-- Saldırı Simülasyonu
 local function AutoAttack()
     local VirtualUser = game:GetService("VirtualUser")
     VirtualUser:CaptureController()
@@ -150,14 +146,20 @@ task.spawn(function()
     while task.wait(0.1) do
         if AutoFarm then
             pcall(function()
-                local questName, mobName, questLevel = GetQuestData()
+                local questName, mobName, questLevel, npcCFrame = GetQuestData()
                 local questGui = player.PlayerGui.Main:FindFirstChild("Quest")
                 
-                -- Aktif görev yoksa al
                 if not questGui or not questGui.Visible then
-                    CommF:InvokeServer("StartQuest", questName, questLevel)
+                    local character = player.Character
+                    if character and character:FindFirstChild("HumanoidRootPart") then
+                        local dist = (character.HumanoidRootPart.Position - npcCFrame.Position).Magnitude
+                        if dist > 15 then
+                            local tw = TweenTo(npcCFrame)
+                            if tw then tw.Completed:Wait() end
+                        end
+                        CommF:InvokeServer("StartQuest", questName, questLevel)
+                    end
                 else
-                    -- Görev varsa mob ara
                     local targetMob = nil
                     for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
                         if enemy.Name == mobName and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
