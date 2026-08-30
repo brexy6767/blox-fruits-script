@@ -2,7 +2,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Ravenya Hub | Blox Fruits (All Seas)",
+   Name = "Ravenya Hub | Blox Fruits",
    LoadingTitle = "Ravenya Hub Yükleniyor...",
    LoadingSubtitle = "by Ravenya",
    ConfigurationSaving = { Enabled = false }
@@ -16,26 +16,34 @@ local SelectWeapon = "Melee"
 
 local player = game.Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
+local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
--- Denizi ve Seviyeyi Algılama Fonksiyonu
+-- Noclip (Engellere Takılmama)
+game:GetService("RunService").Stepped:Connect(function()
+    if AutoFarm and player.Character then
+        for _, part in pairs(player.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Denizi ve Seviyeyi Algılama
 local function GetCurrentSea()
     local placeId = game.PlaceId
-    if placeId == 2753915549 then
-        return 1
-    elseif placeId == 4442272183 then
-        return 2
-    elseif placeId == 7449423635 then
-        return 3
-    end
+    if placeId == 2753915549 then return 1
+    elseif placeId == 4442272183 then return 2
+    elseif placeId == 7449423635 then return 3 end
     return 1
 end
 
 local function GetLevel()
-    return player.Data.Level.Value
+    local levelVal = player:FindFirstChild("Data") and player.Data:FindFirstChild("Level")
+    return levelVal and levelVal.Value or 1
 end
 
--- Seviye ve Denize Göre Görev Tablosu
+-- Seviye / Görev Tablosu
 local function GetQuestData()
     local myLevel = GetLevel()
     local sea = GetCurrentSea()
@@ -56,7 +64,6 @@ local function GetQuestData()
         if myLevel < 525 then return "SkyQuest2", "God's Guard", 1 end
         if myLevel < 625 then return "FountainQuest", "Chore Boy", 1 end
         return "FountainQuest", "Cyborg", 2
-
     elseif sea == 2 then
         if myLevel < 725 then return "Area1Quest", "Raider", 1 end
         if myLevel < 775 then return "Area2Quest", "Mercenary", 1 end
@@ -69,7 +76,6 @@ local function GetQuestData()
         if myLevel < 1350 then return "ShipQuest2", "Ship Officer", 1 end
         if myLevel < 1425 then return "FrostQuest", "Ice Castle Guard", 1 end
         return "ForgottenQuest", "Water Fighter", 1
-
     elseif sea == 3 then
         if myLevel < 1575 then return "PiratePortQuest", "Pirate Millionaire", 1 end
         if myLevel < 1700 then return "AmazonQuest", "Dragon Crew Warrior", 1 end
@@ -88,14 +94,14 @@ local function TweenTo(targetCFrame)
     
     if hrp then
         local distance = (hrp.Position - targetCFrame.Position).Magnitude
-        local speed = 350
+        local speed = 300
         local tweenInfo = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
         local tween = game:GetService("TweenService"):Create(hrp, tweenInfo, {CFrame = targetCFrame})
         tween:Play()
     end
 end
 
--- Silah Kuşanma
+-- Silah Ele Alma
 local function EquipWeapon()
     local character = player.Character
     if not character then return end
@@ -113,14 +119,14 @@ local function EquipWeapon()
     end
 end
 
--- Saldırı Simülasyonu
+-- Saldırı
 local function AutoAttack()
     local VirtualUser = game:GetService("VirtualUser")
     VirtualUser:CaptureController()
     VirtualUser:ClickButton1(Vector2.new(0,0))
 end
 
--- UI Bileşenleri
+-- UI Menüsü
 MainTab:CreateDropdown({
    Name = "Silah Seçimi",
    Options = {"Melee", "Sword", "Blox Fruit"},
@@ -132,7 +138,7 @@ MainTab:CreateDropdown({
 })
 
 MainTab:CreateToggle({
-   Name = "Auto-Farm Level (All Sea Supported)",
+   Name = "Auto-Farm Level",
    CurrentValue = false,
    Callback = function(Value)
       AutoFarm = Value
@@ -147,11 +153,11 @@ task.spawn(function()
                 local questName, mobName, questLevel = GetQuestData()
                 local questGui = player.PlayerGui.Main:FindFirstChild("Quest")
                 
-                -- Eğer aktif görev yoksa Remote çağrısı ile görevi başlat
+                -- Aktif görev yoksa al
                 if not questGui or not questGui.Visible then
                     CommF:InvokeServer("StartQuest", questName, questLevel)
                 else
-                    -- Görev aktifse workspace üzerindeki doğru yaratığı bul
+                    -- Görev varsa mob ara
                     local targetMob = nil
                     for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
                         if enemy.Name == mobName and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
@@ -161,8 +167,7 @@ task.spawn(function()
                     end
                     
                     if targetMob and targetMob:FindFirstChild("HumanoidRootPart") then
-                        -- Yaratığın yukarısına güvenli mesafeye ışınlan ve vur
-                        TweenTo(targetMob.HumanoidRootPart.CFrame * CFrame.new(0, 7, 0))
+                        TweenTo(targetMob.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0))
                         EquipWeapon()
                         AutoAttack()
                     end
